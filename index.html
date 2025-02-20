@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechen-Spiel</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+	
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6GgLCR5o_SmHfR8cDcLGh-2vm4RJLUPA",
+            authDomain: "flying-letters-ae11c.firebaseapp.com",
+            projectId: "flying-letters-ae11c",
+            storageBucket: "flying-letters-ae11c.firebasestorage.app",
+            messagingSenderId: "1062717840076",
+            appId: "1:1062717840076:web:684e9bdb9cf0897f810069"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let zielzahl = 0;
+        let rechenkette = [];
+        let klickAnzahl = 0;
+        let punkte = 100;
+
+        window.signInWithGoogle = function () {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider).then(() => loadGame());
+        };
+
+        window.signInWithFacebook = function () {
+            const provider = new FacebookAuthProvider();
+            signInWithPopup(auth, provider).then(() => loadGame());
+        };
+
+        window.signInWithEmail = function () {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            signInWithEmailAndPassword(auth, email, password).then(() => loadGame());
+        };
+
+        function loadGame() {
+            document.getElementById("loginContainer").classList.add("hidden");
+            document.getElementById("gameContainer").classList.remove("hidden");
+            generateButtons();
+            startNewRound();
+        }
+
+        function startNewRound() {
+            zielzahl = Math.floor(Math.random() * 100) + 1;
+            rechenkette = [];
+            klickAnzahl = 0;
+            punkte = 100;
+            updateTargetNumber();
+            updateRechenkette();
+            updatePunkte();
+        }
+
+        function updateTargetNumber() {
+            document.getElementById("targetNumber").textContent = `Zielzahl: ${zielzahl}`;
+        }
+
+        function updateRechenkette() {
+            const rechenketteDiv = document.getElementById("rechenkette");
+            rechenketteDiv.innerHTML = rechenkette.map(op => `<div class="rechen-element">${op}</div>`).join('');
+            checkResult(); // Automatische Ergebnisprüfung
+        }
+
+        function updatePunkte() {
+            document.getElementById("punkte").textContent = `Punkte: ${punkte}`;
+        }
+
+        function generateButtons() {
+            const buttonContainer = document.getElementById("buttonContainer");
+            buttonContainer.innerHTML = "";
+
+            const zahlen = [2, 3, 5, 6, 9, 12, 14, 15];
+            zahlen.forEach(zahl => {
+                let btn = document.createElement("button");
+                btn.textContent = zahl;
+                btn.className = "game-button number-button";
+                btn.onclick = () => buttonClick(zahl);
+                buttonContainer.appendChild(btn);
+            });
+
+            const operators = ["+", "-", "*", "/"];
+            operators.forEach(op => {
+                let btn = document.createElement("button");
+                btn.textContent = op;
+                btn.className = "game-button operator-button";
+                btn.onclick = () => buttonClick(op);
+                buttonContainer.appendChild(btn);
+            });
+
+            let clearBtn = document.createElement("button");
+            clearBtn.textContent = "<-";
+            clearBtn.className = "game-button clear-button";
+            clearBtn.onclick = () => clearLastInput();
+            buttonContainer.appendChild(clearBtn);
+
+            let r1Btn = document.createElement("button");
+            r1Btn.textContent = "R1";
+            r1Btn.className = "game-button risiko-button";
+            r1Btn.onclick = () => addRisiko("r1");
+            buttonContainer.appendChild(r1Btn);
+
+            let r2Btn = document.createElement("button");
+            r2Btn.textContent = "R2";
+            r2Btn.className = "game-button risiko-button";
+            r2Btn.onclick = () => addRisiko("r2");
+            buttonContainer.appendChild(r2Btn);
+        }
+
+        function buttonClick(value) {
+            rechenkette.push(value);
+            klickAnzahl++;
+            punkte = 100 - klickAnzahl;
+            updateRechenkette();
+            updatePunkte();
+        }
+
+        function addRisiko(type) {
+            const randomValue = Math.floor(Math.random() * 10) + 1;
+            if (type === "r1") {
+                rechenkette.push(`R1(+${randomValue})`);
+            } else if (type === "r2") {
+                rechenkette.push(`R2(-${randomValue})`);
+            }
+            klickAnzahl++;
+            punkte = 100 - klickAnzahl;
+            updateRechenkette();
+            updatePunkte();
+        }
+
+        function clearLastInput() {
+            if (rechenkette.length > 0) {
+                rechenkette.pop();
+                klickAnzahl--;
+                punkte = 100 - klickAnzahl;
+                updateRechenkette();
+                updatePunkte();
+            }
+        }
+
+        function checkResult() {
+            try {
+                // Rechenkette in einen String umwandeln
+                let ausdruck = rechenkette.join("");
+                // Risikobuttons entfernen (z. B. "R1(+5)" -> "")
+                ausdruck = ausdruck.replace(/R\d\(\+[\d]+\)/g, "").replace(/R\d\(\-[\d]+\)/g, "");
+                // Ergebnis berechnen (Punkt-vor-Strich-Regel beachten)
+                const ergebnis = eval(ausdruck);
+                if (ergebnis === zielzahl) {
+                    alert(`Gewonnen! ${ergebnis} ist gleich ${zielzahl}. Punkte: ${punkte}`);
+                    startNewRound();
+                }
+            } catch (error) {
+                console.error("Fehler bei der Berechnung:", error);
+            }
+        }
+
+        window.leaveGame = function () {
+            signOut(auth).then(() => {
+                window.location.href = "dashboard.html";
+            });
+        };
+    </script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #0a0a0a;
+            color: lime;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .game-button {
+            width: 80px;
+            height: 80px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .game-button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .game-button:hover::before {
+            opacity: 1;
+        }
+        .number-button {
+            background-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 40px #00ff00;
+        }
+        .operator-button {
+            background-color: #ff00ff;
+            color: #000;
+            box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+        }
+        .clear-button {
+            background-color: #ffff00;
+            color: #000;
+            box-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 40px #ffff00;
+        }
+        .risiko-button {
+            background-color: #ff4500;
+            color: #000;
+            box-shadow: 0 0 10px #ff4500, 0 0 20px #ff4500, 0 0 40px #ff4500;
+        }
+        .rechenkette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .rechen-element {
+            padding: 10px;
+            border: 1px solid lime;
+            border-radius: 5px;
+            background-color: #222;
+            color: lime;
+            box-shadow: 0 0 5px lime;
+        }
+        .side-menu {
+            position: left-side;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #222;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+            gap: 8px;
+        }
+        .auth-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .email-login {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <h2>Login</h2>
+        <div class="auth-methods">
+            <button onclick="signInWithGoogle()" class="game-button">Google Login</button>
+            <button onclick="signInWithFacebook()" class="game-button">Facebook Login</button>
+        </div>
+        <div class="email-login">
+            <input type="email" id="email" placeholder="E-Mail" />
+            <input type="password" id="password" placeholder="Passwort" />
+            <button onclick="signInWithEmail()" class="game-button">Login</button>
+        </div>
+    </div>
+    
+    <div class="game hidden" id="gameContainer">
+        <div class="target-number" id="targetNumber"></div>
+        <div class="rechenkette" id="rechenkette"></div>
+        <div class="button-container" id="buttonContainer"></div>
+        <div id="punkte">Punkte: 0</div>
+        <div><h3>Gegner: <span id="opponentName">Spieler 2</span> | Punkte: <span id="opponentScore">0</span> | Gelöst: <span id="opponentSolved">0</span></h3></div>
+        <div class="side-menu">
+			<button id="multiplayerButton" class="button-container" style="background-color: blue; color: white;">Multiplayer starten</button>
+            <button onclick="leaveGame()" class="game-button" style="background-color: red; color: white;">Spiel verlassen</button>
+        </div>
+    </div>
+</body>
+</html>
