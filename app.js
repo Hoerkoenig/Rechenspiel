@@ -4,6 +4,13 @@ import { auth, db, ref, set, onValue, push, update } from "./firebase-config.js"
 let currentPlayerId = Math.random().toString(36).substring(7); // Eindeutige Spieler-ID
 let currentPlayerName = "Spieler 1"; // Name des Spielers (später dynamisch setzen)
 
+
+
+let zielzahl = 0; // Zielzahl für die aktuelle Runde
+let rechenkette = []; // Aktuelle Rechenkette
+let klickAnzahl = 0; // Anzahl der Klicks
+let punkte = 0; // Aktuelle Punktzahl
+
 // Funktion, um einen Spieler in die Warteschlange zu setzen
 function joinQueue(playerId, playerName) {
     const queueRef = ref(db, "queue");
@@ -60,6 +67,66 @@ function listenForOpponentMoves(gameId, callback) {
             callback(gameState);
         }
     });
+}
+
+// app.js
+
+// Globale Variablen
+let currentPlayerId = Math.random().toString(36).substring(7); // Eindeutige Spieler-ID
+let currentPlayerName = "Spieler 1"; // Name des Spielers (später dynamisch setzen)
+let zielzahl = 0; // Zielzahl für die aktuelle Runde
+let rechenkette = []; // Aktuelle Rechenkette
+let klickAnzahl = 0; // Anzahl der Klicks
+let punkte = 100; // Aktuelle Punktzahl
+
+// Funktion zur Berechnung der Punkte
+function calculatePunkte(rechenkette) {
+    let punkte = 100; // Startpunkte
+    let ergebnis = 0;
+    let operator = "+";
+
+    for (let op of rechenkette) {
+        if (["+", "-", "*", "/"].includes(op)) {
+            operator = op;
+        } else if (op.startsWith("R")) {
+            // Risikobuttons ignorieren wir für die Berechnung
+            continue;
+        } else {
+            ergebnis = eval(`${ergebnis} ${operator} ${op}`);
+            punkte += ergebnis; // Punkte der vorherigen Aufgaben hinzuaddieren
+        }
+    }
+
+    return punkte;
+}
+
+// Funktion, die bei einem Button-Klick aufgerufen wird
+function buttonClick(value) {
+    rechenkette.push(value); // Wert zur Rechenkette hinzufügen
+    klickAnzahl++; // Klickanzahl erhöhen
+    punkte = calculatePunkte(rechenkette); // Punkte neu berechnen
+    updateRechenkette(); // Rechenkette aktualisieren
+    updatePunkte(); // Punkte anzeigen
+}
+
+// Funktion, um die Rechenkette in der UI anzuzeigen
+function updateRechenkette() {
+    const rechenketteDiv = document.getElementById("rechenkette");
+    rechenketteDiv.innerHTML = rechenkette.map(op => `<div class="rechen-element">${op}</div>`).join('');
+}
+
+// Funktion, um die Punkte in der UI anzuzeigen
+function updatePunkte() {
+    const punkteElement = document.getElementById("punkte");
+    punkteElement.textContent = `Punkte: ${punkte}`;
+}
+
+function buttonClick(value) {
+    rechenkette.push(value);
+    klickAnzahl++;
+    punkte = calculatePunkte(rechenkette); // Punkte neu berechnen
+    updateRechenkette();
+    updatePunkte();
 }
 
 // Funktion, um das Spiel zu beenden
