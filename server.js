@@ -1,14 +1,20 @@
-<<<<<<< HEAD
 const express = require('express');
-const path = require('path');
-
 const app = express();
-const PORT = 10000;
+const port = process.env.PORT || 3000;
 
-// Statische Dateien aus dem aktuellen Verzeichnis bereitstellen
-app.use(express.static(__dirname));
+// Static Files (z.B. HTML, CSS, JS)
+app.use(express.static('public'));
 
-app.listen(PORT, () => {
-    console.log(`Server läuft auf http://localhost:${PORT}`);
+// Beispiel-Route
+app.get('/', (req, res) => {
+  res.send('Willkommen zu meinem Projekt!');
 });
-=======
+
+// Beispiel-API-Route
+app.get('/api/data', (req, res) => {
+  res.json({ message: 'Dies ist eine API-Antwort.' });
+});
+
+app.listen(port, () => {
+  console.log(`Server läuft auf http://localhost:${port}`);
+});
