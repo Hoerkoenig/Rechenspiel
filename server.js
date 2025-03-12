@@ -1,20 +1,9 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Static Files (z.B. HTML, CSS, JS)
-app.use(express.static('public'));
+const port = process.env.PORT || 3000; // Hier wird entweder der von Render gesetzte PORT oder 3000 verwendet
+const host = '0.0.0.0'; // Stelle sicher, dass der Server auf allen IPs hört
 
-// Beispiel-Route
-app.get('/', (req, res) => {
-  res.send('Willkommen zu meinem Projekt!');
-});
-
-// Beispiel-API-Route
-app.get('/api/data', (req, res) => {
-  res.json({ message: 'Dies ist eine API-Antwort.' });
-});
-
-app.listen(port, () => {
-  console.log(`Server läuft auf http://localhost:${port}`);
+app.listen(port, host, () => {
+  console.log(`Server läuft auf http://${host}:${port}`);
 });
