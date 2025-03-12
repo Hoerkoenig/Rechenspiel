@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require('express');
 const path = require('path');
 
@@ -10,3 +11,4 @@ app.use(express.static(__dirname));
 app.listen(PORT, () => {
     console.log(`Server läuft auf http://localhost:${PORT}`);
 });
+=======

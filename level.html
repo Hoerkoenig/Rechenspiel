@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            font-size: 28px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 id="level-text">🎮 Willkommen in Level ...</h2>
+    </div>
+
+    <!-- ✅ Firebase-Skripte -->
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        firebase.initializeApp({
+            apiKey: "DEIN_API_KEY",
+            authDomain: "DEIN_AUTH_DOMAIN",
+            projectId: "DEIN_PROJECT_ID",
+            storageBucket: "DEIN_STORAGE_BUCKET",
+            messagingSenderId: "DEIN_MESSAGING_ID",
+            appId: "DEIN_APP_ID"
+        });
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                db.collection("users").doc(user.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const requestedLevel = parseInt(urlParams.get('level'), 10);
+
+                        if (requestedLevel === data.level) {
+                            document.getElementById("level-text").textContent = `🎮 Willkommen in Level ${requestedLevel}`;
+                        } else {
+                            console.log("🚫 Unbefugter Level-Zugriff!");
+                            window.location.href = "dashboard.html";
+                        }
+                    }
+                });
+            } else {
+                console.log("🚫 Kein Benutzer angemeldet.");
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+
+</body>
+</html>

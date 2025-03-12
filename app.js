@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // app.js
 import { auth, db, ref, set, onValue, push, update } from "./firebase-config.js";
 
@@ -147,3 +148,4 @@ function startMultiplayerGame() {
 
 // Event-Listener für den Multiplayer-Button
 document.getElementById("multiplayerButton").addEventListener("click", startMultiplayerGame);
+=======

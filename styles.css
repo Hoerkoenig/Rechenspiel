@@ -1,0 +1,186 @@
+/* Allgemeine Stile */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #0a0a0a; /* Dunkler Hintergrund */
+    color: lime; /* Neon-Grün für Text */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Container für das Spiel */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #111; /* Dunkler Hintergrund für den Spielbereich */
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); /* Neon-Grüner Schatten */
+}
+
+/* Zielzahl-Anzeige */
+.target-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: lime;
+    text-shadow: 0 0 10px lime, 0 0 20px lime; /* Neon-Glühen */
+}
+
+/* Rechenkette-Anzeige */
+.rechenkette {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.rechen-element {
+    padding: 10px;
+    border: 1px solid lime;
+    border-radius: 5px;
+    background-color: #222; /* Dunkler Hintergrund für Rechenelemente */
+    color: lime;
+    box-shadow: 0 0 5px lime; /* Neon-Glühen */
+}
+
+/* Button-Container */
+.button-container {
+    display: grid;
+    grid-template-columns: repeat(4, 80px); /* 4 Spalten für Buttons */
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Allgemeine Button-Stile */
+.game-button {
+    width: 80px;
+    height: 80px;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Neon-Effekt für Buttons */
+.game-button::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.game-button:hover::before {
+    opacity: 1;
+}
+
+/* Zahlen-Buttons */
+.number-button {
+    background-color: #00ff00; /* Neon-Grün */
+    color: #000;
+    box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 40px #00ff00; /* Neon-Glühen */
+}
+
+/* Operator-Buttons */
+.operator-button {
+    background-color: #ff00ff; /* Neon-Pink */
+    color: #000;
+    box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff; /* Neon-Glühen */
+}
+
+/* Clear-Button */
+.clear-button {
+    background-color: #ffff00; /* Neon-Gelb */
+    color: #000;
+    box-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 40px #ffff00; /* Neon-Glühen */
+}
+
+/* Risiko-Buttons */
+.risiko-button {
+    background-color: #ff4500; /* Neon-Orange */
+    color: #000;
+    box-shadow: 0 0 10px #ff4500, 0 0 20px #ff4500, 0 0 40px #ff4500; /* Neon-Glühen */
+}
+
+/* Punkte-Anzeige */
+#punkte {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: lime;
+    text-shadow: 0 0 10px lime, 0 0 20px lime; /* Neon-Glühen */
+}
+
+/* Gegner-Informationen */
+#opponentName, #opponentScore, #opponentSolved {
+    color: lime;
+    text-shadow: 0 0 10px lime, 0 0 20px lime; /* Neon-Glühen */
+}
+
+/* Side-Menu (z. B. Spiel verlassen) */
+.side-menu {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Login-Container */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #222; /* Dunkler Hintergrund */
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px gray;
+    gap: 8px;
+}
+
+.auth-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.email-login {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Input-Felder */
+input[type="email"], input[type="password"] {
+    padding: 10px;
+    border: 1px solid lime;
+    border-radius: 5px;
+    background-color: #111;
+    color: lime;
+    font-size: 16px;
+}
+
+input[type="email"]::placeholder, input[type="password"]::placeholder {
+    color: #888;
+}
