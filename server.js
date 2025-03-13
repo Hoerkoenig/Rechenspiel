@@ -4,7 +4,7 @@ import { auth, db, ref, set, onValue, push, update } from './firebase-config.js'
 const app = express();
 
 // Verwende entweder die von Render bereitgestellte Umgebungsvariable PORT oder einen Standardport (falls lokal):
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 const host = '0.0.0.0'; // Der Server sollte auf allen IP-Adressen zugänglich sein
 
 // Stelle sicher, dass Express JSON-Anfragen verarbeiten kann
