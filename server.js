@@ -1,9 +1,21 @@
-const express = require('express');
+import express from 'express';
+import { auth, db, ref, set, onValue, push, update } from './firebase-config.js';
+
 const app = express();
 
-const port = process.env.PORT || 3000; // Hier wird entweder der von Render gesetzte PORT oder 3000 verwendet
-const host = '0.0.0.0'; // Stelle sicher, dass der Server auf allen IPs hört
+// Verwende entweder die von Render bereitgestellte Umgebungsvariable PORT oder einen Standardport (falls lokal):
+const PORT = process.env.PORT || 10000;
 
-app.listen(port, host, () => {
-  console.log(`Server läuft auf http://${host}:${port}`);
+// Stelle sicher, dass Express JSON-Anfragen verarbeiten kann
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Beispiel-Route
+app.get('/', (req, res) => {
+  res.send('Willkommen beim Rechenspiel!');
+});
+
+// Starte den Server
+app.listen(PORT, () => {
+  console.log(`Server läuft auf http://localhost:${PORT}`);
 });
