@@ -31,7 +31,7 @@ const __filename = fileURLToPath(import.meta.url); // Aktuellen Dateipfad ermitt
 const __dirname = path.dirname(__filename);  // Verzeichnis des aktuellen Moduls
 
 // Statische Dateien (public Ordner) bereitstellen
-app.use(express.static(path.join(__dirname, 'Public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Diese Route zeigt die Login-Seite an, wenn der Benutzer nicht eingeloggt ist
 app.get('/', (req, res) => {
