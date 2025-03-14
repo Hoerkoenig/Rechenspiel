@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css"> <!-- optional, falls du CSS hast -->
+</head>
+<body>
+    <header>
+        <h1>Willkommen im Dashboard</h1>
+        <button id="logoutButton">Abmelden</button>
+    </header>
+
+    <main>
+        <section id="userInfo">
+            <h2>Deine Informationen</h2>
+            <p><strong>Name:</strong> <span id="userName">Lädt...</span></p>
+            <p><strong>Aktuelles Level:</strong> <span id="userLevel">Lädt...</span></p>
+            <p><strong>Aktivierte Boni:</strong> <span id="userBoni">Lädt...</span></p>
+        </section>
+
+        <section id="gameControls">
+            <h2>Spiel steuern</h2>
+            <button id="startGameButton">Spiel starten</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Rechenspiel</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-database.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
