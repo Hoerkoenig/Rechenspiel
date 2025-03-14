@@ -21,13 +21,13 @@ const db = getDatabase(app);
 
 // Authentifizierungsstatus überwachen
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Der Benutzer ist eingeloggt, leite ihn zum Dashboard weiter
-        console.log('Benutzer ist eingeloggt:', user);
-        window.location.href = 'dashboard.html';  // Weiterleiten zur Dashboard-Seite
-    } else {
-        // Der Benutzer ist nicht eingeloggt, leite ihn zur Login-Seite weiter
-        console.log('Benutzer ist nicht eingeloggt');
-        window.location.href = 'login.html';  // Weiterleiten zur Login-Seite
-    }
+  if (user) {
+    // Der Benutzer ist eingeloggt, leite ihn zum Dashboard weiter
+    console.log('Benutzer ist eingeloggt:', user);
+    window.location.href = 'dashboard.html';  // Weiterleiten zur Dashboard-Seite
+  } else {
+    // Der Benutzer ist nicht eingeloggt, leite ihn zur Login-Seite weiter
+    console.log('Benutzer ist nicht eingeloggt');
+    window.location.href = 'login.html';  // Weiterleiten zur Login-Seite
+  }
 });
