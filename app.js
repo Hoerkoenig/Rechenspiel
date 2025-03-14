@@ -1,72 +1,32 @@
+// Firebase-Initialisierung
+import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.7.0/firebase-database.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js';
 
-// app.js
-import { auth, db, ref, set, onValue, push, update } from "./firebase-config.js";
+// Firebase Konfiguration
+const firebaseConfig = {
+    apiKey: "AIzaSyB6GgLCR5o_SmHfR8cDcLGh-2vm4RJLUPA",
+    authDomain: "flying-letters-ae11c.firebaseapp.com",
+    projectId: "flying-letters-ae11c",
+    storageBucket: "flying-letters-ae11c.appspot.com",
+    messagingSenderId: "1062717840076",
+    appId: "1:1062717840076:web:684e9bdb9cf0897f810069"
+};
 
-let currentPlayerId = Math.random().toString(36).substring(7); // Eindeutige Spieler-ID
-let currentPlayerName = "Spieler 1"; // Name des Spielers (später dynamisch setzen)
+// Firebase initialisieren
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-
-
-let zielzahl = 0; // Zielzahl für die aktuelle Runde
-let rechenkette = []; // Aktuelle Rechenkette
-let klickAnzahl = 0; // Anzahl der Klicks
-let punkte = 0; // Aktuelle Punktzahl
-
-// Funktion, um einen Spieler in die Warteschlange zu setzen
-function joinQueue(playerId, playerName) {
-    const queueRef = ref(db, "queue");
-    push(queueRef, { playerId, playerName });
-}
-
-// Funktion, um auf einen Gegner zu warten
-function waitForOpponent(playerId, callback) {
-    const queueRef = ref(db, "queue");
-    onValue(queueRef, (snapshot) => {
-        const queue = snapshot.val();
-        if (queue && Object.keys(queue).length >= 2) {
-            const players = Object.values(queue);
-            const opponent = players.find(player => player.playerId !== playerId);
-            if (opponent) {
-                callback(opponent);
-            }
-        }
-    });
-}
-
-// Funktion, um das Spiel mit einem Gegner zu starten
-function startGameWithOpponent(opponent) {
-    const gameId = Math.random().toString(36).substring(7); // Eindeutige Spiel-ID
-    const gameRef = ref(db, `games/${gameId}`);
-
-    // Initialer Spielzustand
-    set(gameRef, {
-        player1: { id: currentPlayerId, name: currentPlayerName, rechenkette: [], punkte: 100 },
-        player2: { id: opponent.playerId, name: opponent.playerName, rechenkette: [], punkte: 100 }
-    });
-
-    // Echtzeit-Synchronisation
-    listenForOpponentMoves(gameId, (gameState) => {
-        updateGameUI(gameState);
-    });
-}
-
-// Funktion, um den Spielzustand zu synchronisieren
-function syncGameState(gameId, playerId, rechenkette, punkte) {
-    const gameRef = ref(db, `games/${gameId}`);
-    update(gameRef, {
-        [`player1/rechenkette`]: rechenkette,
-        [`player1/punkte`]: punkte
-    });
-}
-
-// Funktion, um die Aktionen des Gegners zu überwachen
-function listenForOpponentMoves(gameId, callback) {
-    const gameRef = ref(db, `games/${gameId}`);
-    onValue(gameRef, (snapshot) => {
-        const gameState = snapshot.val();
-        if (gameState) {
-            callback(gameState);
-        }
-    });
-}
-
+// Authentifizierungsstatus überwachen
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Der Benutzer ist eingeloggt, leite ihn zum Dashboard weiter
+        console.log('Benutzer ist eingeloggt:', user);
+        window.location.href = 'dashboard.html';  // Weiterleiten zur Dashboard-Seite
+    } else {
+        // Der Benutzer ist nicht eingeloggt, leite ihn zur Login-Seite weiter
+        console.log('Benutzer ist nicht eingeloggt');
+        window.location.href = 'login.html';  // Weiterleiten zur Login-Seite
+    }
+});

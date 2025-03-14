@@ -1,22 +1,20 @@
-import express from 'express';
-import { auth, db, ref, set, onValue, push, update } from './firebase-config.js';
+import express from 'express';  // Verwende import statt require
+import path from 'path';        // Verwende import statt require
+import { fileURLToPath } from 'url'; // Benötigt, um den Dateipfad korrekt zu ermitteln in einem ES-Modul
 
 const app = express();
+const port = 3000;
 
-// Verwende entweder die von Render bereitgestellte Umgebungsvariable PORT oder einen Standardport (falls lokal):
-const PORT = process.env.PORT || 3000;
-const host = '0.0.0.0'; // Der Server sollte auf allen IP-Adressen zugänglich sein
+// Um __dirname zu verwenden (für ES-Module):
+const __filename = fileURLToPath(import.meta.url); 
+const __dirname = path.dirname(__filename);
 
-// Stelle sicher, dass Express JSON-Anfragen verarbeiten kann
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Beispiel-Route
-app.get('/', (req, res) => {
-  res.send('Willkommen beim Rechenspiel!');
+// Route für login.html
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));  // Zeigt die login.html an
 });
 
-// Starte den Server
-app.listen(PORT, () => {
-  console.log(`Server läuft auf http://localhost:${PORT}`);
+// Server starten
+app.listen(port, () => {
+  console.log(`Server läuft auf http://localhost:${port}`);
 });
