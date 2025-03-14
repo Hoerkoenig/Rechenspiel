@@ -30,9 +30,11 @@ const __dirname = path.dirname(__filename);  // Verzeichnis des aktuellen Moduls
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Diese Route zeigt die Login-Seite an, wenn der Benutzer nicht eingeloggt ist
-app.get('/login', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
+
+
 
 // Diese Route zeigt das Dashboard an, wenn der Benutzer eingeloggt ist
 app.get('/dashboard', (req, res) => {
