@@ -1,7 +1,8 @@
 // Firebase-Initialisierung
-import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.7.0/firebase-database.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js';
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';  // Firebase-Auth aus dem npm-Paket
+import { getDatabase, ref, get } from 'firebase/database';  // Firebase-Datenbank
+import { initializeApp } from 'firebase/app'; // Firebase initialisieren
+
 
 // Firebase Konfiguration
 const firebaseConfig = {
