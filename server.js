@@ -1,20 +1,18 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { initializeApp } from 'firebase/app';
-import { getAuth, verifyIdToken } from 'firebase-admin/auth';  // Firebase Admin SDK für serverseitige Authentifizierung
-import * as admin from 'firebase-admin';
+import express from 'express';  // Express-Framework importieren
+import path from 'path';        // Um den Pfad zu verwalten
+import { fileURLToPath } from 'url';  // Um den Dateipfad des aktuellen Moduls zu ermitteln
+import admin from 'firebase-admin';  // Firebase Admin SDK importieren
+import { initializeApp } from 'firebase/app';  // Firebase initialisieren
+import { getAuth, onAuthStateChanged } from 'firebase/auth';  // Firebase Auth importieren
 
 // Initialisierung von Express
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;  // Der Port, auf dem der Server läuft
 
 // Firebase Admin SDK initialisieren
-admin.initializeApp({
-  credential: admin.credential.applicationDefault()  // Stelle sicher, dass du die Firebase Admin SDK-Konfiguration korrekt hinzufügst
-});
+admin.initializeApp(); // Firebase Admin initialisieren
 
-// Firebase-Konfiguration (Client)
+// Firebase-Konfiguration für das Client-SDK
 const firebaseConfig = {
   apiKey: "AIzaSyB6GgLCR5o_SmHfR8cDcLGh-2vm4RJLUPA",
   authDomain: "flying-letters-ae11c.firebaseapp.com",
@@ -24,46 +22,54 @@ const firebaseConfig = {
   appId: "1:1062717840076:web:684e9bdb9cf0897f810069"
 };
 
-// Firebase initialisieren (Client)
+// Firebase initialisieren (nur für Client)
 const appFirebase = initializeApp(firebaseConfig);
+const auth = getAuth(appFirebase);
 
-// Verwende den richtigen Dateipfad
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Middleware, um statische Dateien zu bedienen (z. B. HTML, CSS, JS)
+const __filename = fileURLToPath(import.meta.url); // Aktuellen Dateipfad ermitteln
+const __dirname = path.dirname(__filename);  // Verzeichnis des aktuellen Moduls
 
-// Statische Dateien bereitstellen
+// Statische Dateien (public Ordner) bereitstellen
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());  // Um JSON-Daten zu empfangen
 
-// Route für die Startseite
+// Diese Route zeigt die Login-Seite an, wenn der Benutzer nicht eingeloggt ist
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// Route für das Dashboard
+// Diese Route zeigt das Dashboard an, wenn der Benutzer eingeloggt ist
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Token-Überprüfung und Weiterleitung
-app.post('/checkAuth', (req, res) => {
-  const token = req.body.token;
+// Middleware für Firebase-Authentifizierung (Überprüfung des Tokens)
+app.get('/checkAuth', async (req, res) => {
+  const idToken = req.headers['authorization']?.split('Bearer ')[1];  // Holen des Tokens aus den Headers
   
-  if (!token) {
-    return res.status(400).send('Token erforderlich');
+  if (!idToken) {
+    return res.status(401).send('No token provided');
   }
 
-  // Verifiziere das ID-Token mit Firebase Admin SDK
-  admin.auth().verifyIdToken(token)
-    .then((decodedToken) => {
-      const uid = decodedToken.uid;
-      console.log('Benutzer verifiziert:', uid);
-      res.status(200).send('Benutzer verifiziert');
-    })
-    .catch((error) => {
-      console.error('Fehler bei der Token-Verifizierung:', error);
-      res.status(401).send('Token ungültig');
-    });
+  try {
+    // Token überprüfen
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+    console.log('Benutzer-ID:', uid);
+    res.status(200).send(`Benutzer ID: ${uid}`);
+  } catch (error) {
+    console.error('Fehler beim Überprüfen des Tokens:', error);
+    res.status(401).send('Token ist ungültig');
+  }
+});
+
+// Firebase Auth-Status überwachen und den Benutzer weiterleiten
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log('Benutzer ist eingeloggt:', user);
+  } else {
+    console.log('Benutzer ist nicht eingeloggt');
+  }
 });
 
 // Server starten
