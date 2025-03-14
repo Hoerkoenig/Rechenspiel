@@ -3,89 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Zahlenspiel</title>
-    <link rel="stylesheet" href="styles.css"> <!-- CSS für das Design -->
+    <title>Login - Rechenspiel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .google-btn {
+            background-color: #db4437;
+        }
+
+        .facebook-btn {
+            background-color: #1877f2;
+        }
+
+        .email-btn {
+            background-color: #555;
+        }
+
+        .login-btn img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Willkommen beim Zahlenspiel</h2>
 
+    <div class="login-container">
+        <h2>Login</h2>
+        
         <!-- Google Login Button -->
-        <button id="google-login" class="social-btn google">
-            <img src="google-logo.png" alt="Google Logo"> Mit Google anmelden
+        <button id="google-login" class="login-btn google-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo">
+            Mit Google anmelden
         </button>
 
         <!-- Facebook Login Button -->
-        <button id="facebook-login" class="social-btn facebook">
-            <img src="facebook-logo.png" alt="Facebook Logo"> Mit Facebook anmelden
+        <button id="facebook-login" class="login-btn facebook-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook Logo">
+            Mit Facebook anmelden
         </button>
 
-        <hr> <!-- Trennlinie -->
+        <!-- E-Mail Login -->
+        <input type="email" id="email" placeholder="E-Mail-Adresse">
+        <input type="password" id="password" placeholder="Passwort">
+        <button id="email-login" class="login-btn email-btn">Mit E-Mail anmelden</button>
 
-        <!-- E-Mail Anmeldung -->
-        <form id="login-form">
-            <input type="email" id="email" placeholder="E-Mail" required>
-            <input type="password" id="password" placeholder="Passwort" required>
-            <button type="submit" class="login-btn">Anmelden</button>
-        </form>
-
-        <p>Noch kein Konto? <a href="#" id="register-link">Hier registrieren</a></p>
+        <p id="error-message" class="error-message"></p>
     </div>
 
-    <!-- Firebase & JS -->
-    <script type="module">
-        import { auth, googleProvider, facebookProvider } from "./firebase-config.js";
-        import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
-            from "https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js";
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js"></script>
+
+    <script>
+        // Firebase-Konfiguration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6GgLCR5o_SmHfR8cDcLGh-2vm4RJLUPA",
+            authDomain: "flying-letters-ae11c.firebaseapp.com",
+            projectId: "flying-letters-ae11c",
+            storageBucket: "flying-letters-ae11c.appspot.com",
+            messagingSenderId: "1062717840076",
+            appId: "1:1062717840076:web:684e9bdb9cf0897f810069"
+        };
+
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
         // Google Login
         document.getElementById("google-login").addEventListener("click", () => {
-            signInWithPopup(auth, googleProvider)
-                .then(result => {
-                    console.log("Eingeloggt:", result.user);
-                    window.location.href = "dashboard.html";
-                })
-                .catch(error => console.error("Fehler:", error));
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => { window.location.href = "dashboard.html"; })
+                .catch(error => { document.getElementById("error-message").innerText = error.message; });
         });
 
         // Facebook Login
         document.getElementById("facebook-login").addEventListener("click", () => {
-            signInWithPopup(auth, facebookProvider)
-                .then(result => {
-                    console.log("Eingeloggt:", result.user);
-                    window.location.href = "dashboard.html";
-                })
-                .catch(error => console.error("Fehler:", error));
+            const provider = new firebase.auth.FacebookAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => { window.location.href = "dashboard.html"; })
+                .catch(error => { document.getElementById("error-message").innerText = error.message; });
         });
 
-        // E-Mail Anmeldung
-        document.getElementById("login-form").addEventListener("submit", (e) => {
-            e.preventDefault();
+        // E-Mail Login
+        document.getElementById("email-login").addEventListener("click", () => {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then(result => {
-                    console.log("E-Mail Login erfolgreich:", result.user);
-                    window.location.href = "dashboard.html";
-                })
-                .catch(error => console.error("Fehler:", error));
-        });
-
-        // Registrierung
-        document.getElementById("register-link").addEventListener("click", () => {
-            const email = prompt("E-Mail:");
-            const password = prompt("Passwort:");
-
-            if (email && password) {
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then(result => {
-                        console.log("Registrierung erfolgreich:", result.user);
-                        alert("Registrierung erfolgreich! Bitte einloggen.");
-                    })
-                    .catch(error => console.error("Fehler:", error));
-            }
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => { window.location.href = "dashboard.html"; })
+                .catch(error => { document.getElementById("error-message").innerText = error.message; });
         });
     </script>
+
 </body>
 </html>

@@ -1,25 +1,14 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const express = require("express");
+const path = require("path");
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+app.use(express.static("public"));  // Statische Dateien aus "public/" bereitstellen
 
-// Statische Dateien bereitstellen
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Routen definieren
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-app.get('/dashboard.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+// Login-Seite
+app.get("/login", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
 // Server starten
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server läuft auf http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server läuft auf http://localhost:${PORT}`));
