@@ -3,32 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Rechenspiel</title>
-    <link rel="stylesheet" href="style.css">
-   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
-<script src="firebase-config.js"></script>
-
+    <title>Login - Zahlenspiel</title>
+    <link rel="stylesheet" href="styles.css"> <!-- CSS für das Design -->
 </head>
 <body>
     <div class="login-container">
-        <h1>Willkommen beim Rechenspiel</h1>
+        <h2>Willkommen beim Zahlenspiel</h2>
 
-        <!-- Google Login -->
-        <button id="google-login">Mit Google anmelden</button>
+        <!-- Google Login Button -->
+        <button id="google-login" class="social-btn google">
+            <img src="google-logo.png" alt="Google Logo"> Mit Google anmelden
+        </button>
 
-        <!-- Facebook Login -->
-        <button id="facebook-login">Mit Facebook anmelden</button>
+        <!-- Facebook Login Button -->
+        <button id="facebook-login" class="social-btn facebook">
+            <img src="facebook-logo.png" alt="Facebook Logo"> Mit Facebook anmelden
+        </button>
 
-        <!-- E-Mail Login -->
-        <input type="email" id="email" placeholder="E-Mail">
-        <input type="password" id="password" placeholder="Passwort">
-        <button id="email-login">Mit E-Mail anmelden</button>
-        <button id="email-signup">Registrieren</button>
+        <hr> <!-- Trennlinie -->
+
+        <!-- E-Mail Anmeldung -->
+        <form id="login-form">
+            <input type="email" id="email" placeholder="E-Mail" required>
+            <input type="password" id="password" placeholder="Passwort" required>
+            <button type="submit" class="login-btn">Anmelden</button>
+        </form>
+
+        <p>Noch kein Konto? <a href="#" id="register-link">Hier registrieren</a></p>
     </div>
 
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
+    <!-- Firebase & JS -->
+    <script type="module">
+        import { auth, googleProvider, facebookProvider } from "./firebase-config.js";
+        import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
+            from "https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js";
+
+        // Google Login
+        document.getElementById("google-login").addEventListener("click", () => {
+            signInWithPopup(auth, googleProvider)
+                .then(result => {
+                    console.log("Eingeloggt:", result.user);
+                    window.location.href = "dashboard.html";
+                })
+                .catch(error => console.error("Fehler:", error));
+        });
+
+        // Facebook Login
+        document.getElementById("facebook-login").addEventListener("click", () => {
+            signInWithPopup(auth, facebookProvider)
+                .then(result => {
+                    console.log("Eingeloggt:", result.user);
+                    window.location.href = "dashboard.html";
+                })
+                .catch(error => console.error("Fehler:", error));
+        });
+
+        // E-Mail Anmeldung
+        document.getElementById("login-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(result => {
+                    console.log("E-Mail Login erfolgreich:", result.user);
+                    window.location.href = "dashboard.html";
+                })
+                .catch(error => console.error("Fehler:", error));
+        });
+
+        // Registrierung
+        document.getElementById("register-link").addEventListener("click", () => {
+            const email = prompt("E-Mail:");
+            const password = prompt("Passwort:");
+
+            if (email && password) {
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(result => {
+                        console.log("Registrierung erfolgreich:", result.user);
+                        alert("Registrierung erfolgreich! Bitte einloggen.");
+                    })
+                    .catch(error => console.error("Fehler:", error));
+            }
+        });
+    </script>
 </body>
 </html>
