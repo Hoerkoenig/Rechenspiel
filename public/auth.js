@@ -1,70 +1,59 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const googleLoginBtn = document.getElementById('google-login');
-    const facebookLoginBtn = document.getElementById('facebook-login');
-    const emailLoginBtn = document.getElementById('email-login');
-    const emailSignupBtn = document.getElementById('email-signup');
+// Firebase-Konfiguration
+const firebaseConfig = {
+    apiKey: "AIzaSyB6GgLCR5o_SmHfR8cDcLGh-2vm4RJLUPA",
+    authDomain: "flying-letters-ae11c.firebaseapp.com",
+    projectId: "flying-letters-ae11c",
+    storageBucket: "flying-letters-ae11c.appspot.com",
+    messagingSenderId: "1062717840076",
+    appId: "1:1062717840076:web:684e9bdb9cf0897f810069"
+};
 
-    // 🔹 Google Login
-    googleLoginBtn.addEventListener('click', () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(userCredential => {
-            saveUserToDatabase(userCredential.user);
-        }).catch(error => console.error(error));
-    });
+// Firebase initialisieren
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-    // 🔹 Facebook Login
-    facebookLoginBtn.addEventListener('click', () => {
-        const provider = new firebase.auth.FacebookAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(userCredential => {
-            saveUserToDatabase(userCredential.user);
-        }).catch(error => console.error(error));
-    });
+// Google Login
+document.getElementById('google-login').addEventListener('click', () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(result => {
+            console.log('Google Login erfolgreich:', result.user);
+            window.location.href = 'dashboard.html';
+        })
+        .catch(error => console.error('Google Login Fehler:', error));
+});
 
-    // 🔹 E-Mail Login
-    emailLoginBtn.addEventListener('click', () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+// Facebook Login
+document.getElementById('facebook-login').addEventListener('click', () => {
+    const provider = new firebase.auth.FacebookAuthProvider();
+    auth.signInWithPopup(provider)
+        .then(result => {
+            console.log('Facebook Login erfolgreich:', result.user);
+            window.location.href = 'dashboard.html';
+        })
+        .catch(error => console.error('Facebook Login Fehler:', error));
+});
 
-        firebase.auth().signInWithEmailAndPassword(email, password)
-            .then(userCredential => {
-                saveUserToDatabase(userCredential.user);
-            })
-            .catch(error => alert(error.message));
-    });
+// E-Mail/Passwort Login
+document.getElementById('email-login').addEventListener('click', () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    auth.signInWithEmailAndPassword(email, password)
+        .then(result => {
+            console.log('E-Mail Login erfolgreich:', result.user);
+            window.location.href = 'dashboard.html';
+        })
+        .catch(error => console.error('E-Mail Login Fehler:', error));
+});
 
-    // 🔹 Registrierung mit E-Mail
-    emailSignupBtn.addEventListener('click', () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-            .then(userCredential => {
-                saveUserToDatabase(userCredential.user);
-            })
-            .catch(error => alert(error.message));
-    });
-
-    // 🔹 Speichert den Benutzer in die Firebase-Datenbank
-    function saveUserToDatabase(user) {
-        const userRef = firebase.database().ref('users/' + user.uid);
-
-        userRef.once('value', snapshot => {
-            if (!snapshot.exists()) {
-                userRef.set({
-                    email: user.email,
-                    level: 1, 
-                    b1: false, b2: false, b3: false, b4: false, 
-                    b5: false, b6: false, b7: false, b8: false, 
-                    zb1: 0, zb2: 0, zb3: 0, zb4: 0, 
-                    zb5: 0, zb6: 0, zb7: 0, zb8: 0
-                }).then(() => {
-                    console.log('Benutzer zur DB hinzugefügt.');
-                    window.location.href = 'dashboard.html';
-                });
-            } else {
-                console.log('Benutzer existiert bereits.');
-                window.location.href = 'dashboard.html';
-            }
-        });
-    }
+// Registrierung mit E-Mail
+document.getElementById('email-signup').addEventListener('click', () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    auth.createUserWithEmailAndPassword(email, password)
+        .then(result => {
+            console.log('Registrierung erfolgreich:', result.user);
+            window.location.href = 'dashboard.html';
+        })
+        .catch(error => console.error('Registrierungs-Fehler:', error));
 });

@@ -1,51 +1,27 @@
-<!-- login.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js"></script>
+    <script defer src="auth.js"></script>
 </head>
 <body>
     <h2>Login</h2>
-    <button id="loginBtn">Login mit Google</button>
     
-    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.7.0/firebase-auth.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB6GgLCR5o_SmHfR8cDcLGh-2vm4RJLUPA",
-            authDomain: "flying-letters-ae11c.firebaseapp.com",
-            projectId: "flying-letters-ae11c",
-            storageBucket: "flying-letters-ae11c.appspot.com",
-            messagingSenderId: "1062717840076",
-            appId: "1:1062717840076:web:684e9bdb9cf0897f810069"
-        };
+    <!-- Google Login Button -->
+    <button id="google-login">Mit Google anmelden</button>
 
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+    <!-- Facebook Login Button -->
+    <button id="facebook-login">Mit Facebook anmelden</button>
 
-        document.getElementById('loginBtn').addEventListener('click', async () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await auth.signInWithPopup(provider);
-            const token = await result.user.getIdToken();
-            
-            // Token an den Server senden
-            fetch('/checkAuth', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token })
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = '/dashboard';
-                } else {
-                    console.log('Fehler beim Authentifizieren');
-                }
-            });
-        });
-    </script>
+    <!-- E-Mail/Passwort Login -->
+    <input type="email" id="email" placeholder="E-Mail">
+    <input type="password" id="password" placeholder="Passwort">
+    <button id="email-login">Login</button>
+    <button id="email-signup">Registrieren</button>
+
 </body>
 </html>
